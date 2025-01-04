@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+       
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 2.5vw;
+
+}
+
+.toggle-btn{
+    width: 20px;
+    height: 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+.toggle-btn span{
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #979797;
+}
+
+.toggle-btn span:nth-child(1){
+    top: 0;
+}
+
+.toggle-btn span:nth-child(3){
+    top: 100%;
+}
+
+.logo{
+    height: 30px;
+    margin: -10px 30px 0;
+}
+
+.search-box {
+    position: relative;
+    max-width: 500px;
+    width: 40%;
+    height: 35px;
+    display: flex;
+
+}
+
+.search-bar{
+    width: 85%;
+    height: 100%;
+    border: 2px solid #dbdbdb;
+    padding: 0 20px;
+    font-size: 16px;
+     text-transform: capitalize;
+}
+
+.search-btn {
+    width: 15%;
+    height: 110%;
+    background: #f0f0f0;
+    border: 2px solid #dbdbdb;
+    padding: 5px 0;
+    border-left: none;
+}
+
+.search-btn img{
+    height: 100%; 
+}
+
+.user-options{
+    height: 35px;
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+
+}
+
+.user-options icon{
+    height: 80%;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+
+/* Sidebar */
+.side-bar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    min-width: 200px;
+    height: calc(100vh - 60px);
+    background: #fff;
+    padding-left: 10px;
+}
+
+.links{
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+    color: #242424;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none; 
+
+}
+
+.links img{
+    height: 25px;
+    margin-right: 20px;
+
+}
+
+.links:hover ,
+.links.active{
+    background: rgba(0, 0, 0, .1);
+}
+
+.seperator {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    margin: 20px 0;
+
+} 
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+            margin-top: 20px;
+
+        }
+
+        h1 {
+            color: #333;
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        .video-card {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-card iframe {
+            width: 50%;
+            height: 300px;
+            border: none;
+        }
+
+        .card-content {
+            padding: 20px;
+            background-color: #ffffff;
+            color: #333;
+            width: 50%;
+            box-sizing: border-box;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-meta {
+            font-size: 14px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            height: 120px;
+            overflow-y: auto;
+        }
+
+        .card-thumbnail {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .card-info {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .card-info .views {
+            font-size: 14px;
+            color: #777;
+            margin-left: auto;
+        }
+
+        /* Add responsive styling */
+        @media (max-width: 768px) {
+        
+
+            .content {
+                margin-left: 220px;
+            }
+
+            .video-card iframe {
+                height: 250px;
+            }
+
+            .card-title {
+                font-size: 18px;
+            }
+
+            .video-card {
+                flex-direction: column;
+            }
+
+            .card-content {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+           
+
+            .content {
+                margin-left: 0;
+            }
+
+            .video-card iframe {
+                height: 200px;
+            }
+
+            .card-title {
+                font-size: 16px;
+            }
+
+            .video-card {
+                flex-direction: column;
+            }
+
+            .card-content {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="toggle-btn">
+         <span></span>
+         <span></span>
+         <span></span>
+        </div> 
+        <img src="img/logo.PNG" alt="logo" class="logo">
+        <div class="search-box">
+         <input type="text" class="search-bar" placeholder="search">
+         <button class="search-btn"><img src="/img/search.PNG" alt="search" ></button>
+        </div>
+        <div class="user-options">
+         <img src="/img/video.PNG" alt="" class="icon">
+         <img src="/img/grid.PNG" alt=""class="icon">
+         <img src="/img/bell.PNG" alt=""class="icon">
+        </div>
+     </nav>
+ 
+     <!-- Nav bar ends here  -->
+ 
+     <div class="side-bar">
+         <a href="/index.html" class="links" ><img src="/img/home.PNG" alt="">Home </a>
+         <a href="explore.html" class="links">
+             <img src="img/explore.PNG" alt="Explore Icon">Explore
+         </a>        
+         <hr class="seperator">
+         
+         <a href="history.html" class="links active" >
+             <img src="/img/history.PNG" alt="History">History
+         </a> 
+         <a href="#" class="links"><img src="/img/your-video.PNG" alt="">Your videos </a>
+         <a href="#" class="links"><img src="/img/watch-later.PNG" alt="">Watch Later </a>
+         
+         <a href="#" class="links"><img src="/img/show more.PNG" alt="">Show more </a>
+     </div>
+
+    <div class="content">
+        <h1>Your Video History</h1>
+        <div id="history-container"></div>
+    </div>
+
+    <script>
+        // Simulate the watched videos
+        const watchedVideos = [
+            {
+                id: 'M7lc1UVf-VE', // A working YouTube video ID for demonstration
+                title: 'YouTube Developers',
+                channel: 'YouTube Developers',
+                description: 'Official video from YouTube Developers Channel',
+                thumbnail: 'https://i.ytimg.com/vi/M7lc1UVf-VE/default.jpg',
+                views: '1,000,000+',
+                publishedAt: '2019-01-01T00:00:00Z'
+            },
+            {
+                id: 'rfscVS0vtbw', // A new video ID that is accessible in India
+                title: 'Learn Python',
+                channel: 'freeCodeCamp.org',
+                description: 'In this video, you will learn the fundamentals of programming with freeCodeCamp.',
+                thumbnail: 'https://i.ytimg.com/vi/kxopViU98Xo/default.jpg',
+                views: '5,000,000+',
+                publishedAt: '2020-12-01T00:00:00Z'
+            },
+            {
+                id: '7_LPdttKXPc', // A new video ID that is accessible in India
+                title: 'Learn Python',
+                channel: 'freeCodeCamp.org',
+                description: 'In this video, you will learn the fundamentals of programming with freeCodeCamp.',
+                thumbnail: 'https://i.ytimg.com/vi/kxopViU98Xo/default.jpg',
+                views: '5,000,000+',
+                publishedAt: '2020-12-01T00:00:00Z'
+            },
+            {
+                id: '2ePf9rue1Ao', // A new video ID that is accessible in India
+                title: 'Learn Python',
+                channel: 'freeCodeCamp.org',
+                description: 'In this video, you will learn the fundamentals of programming with freeCodeCamp.',
+                thumbnail: 'https://i.ytimg.com/vi/kxopViU98Xo/default.jpg',
+                views: '5,000,000+',
+                publishedAt: '2020-12-01T00:00:00Z'
+            }
+
+        ];
+
+        const historyContainer = document.getElementById('history-container');
+
+        function displayHistory(videos) {
+            videos.forEach(video => {
+                const card = document.createElement('div');
+                card.classList.add('video-card');
+                card.innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/${video.id}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="card-content">
+                        <p class="card-title">${video.title}</p>
+                        <div class="card-info">
+                            <img src="${video.thumbnail}" alt="Channel thumbnail" class="card-thumbnail">
+                            <p class="card-meta">Uploaded by ${video.channel} - ${video.publishedAt}</p>
+                            <p class="views">${video.views} views</p>
+                        </div>
+                        <p class="card-description">${video.description}</p>
+                    </div>
+                `;
+                historyContainer.appendChild(card);
+            });
+        }
+
+        // Display the history of watched videos
+        displayHistory(watchedVideos);
+    </script>
+
+</body>
+</html>

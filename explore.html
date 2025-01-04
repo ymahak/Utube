@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending Videos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f4f4f4;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            overflow-y: auto;
+            padding-top: 30px;
+            padding-left: 10px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            padding: 0 15px;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #555;
+            text-decoration: none;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .links:hover,
+        .links.active {
+            background: rgba(0, 0, 0, .1);
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        .video-card {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-card iframe {
+            width: 50%;
+            height: 300px;
+            border: none;
+        }
+
+        .card-content {
+            padding: 20px;
+            background-color: #ffffff;
+            color: #333;
+            width: 50%;
+            box-sizing: border-box;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-meta {
+            font-size: 14px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            height: 120px;
+            overflow-y: auto;
+        }
+
+        .card-thumbnail {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .card-info {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .card-info .views {
+            font-size: 14px;
+            color: #777;
+            margin-left: auto;
+        }
+
+        /* Add responsive styling */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .content {
+                margin-left: 220px;
+            }
+
+            .video-card iframe {
+                height: 250px;
+            }
+
+            .card-title {
+                font-size: 18px;
+            }
+
+            .video-card {
+                flex-direction: column;
+            }
+
+            .card-content {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                padding-top: 10px;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .video-card iframe {
+                height: 200px;
+            }
+
+            .card-title {
+                font-size: 16px;
+            }
+
+            .video-card {
+                flex-direction: column;
+            }
+
+            .card-content {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Explore</h2>
+        <hr class="seperator">
+        <a href="#" class="active links">Trending</a>
+        <a href="#">Shopping</a>
+        <a href="#">Music</a>
+        <a href="#">Films</a>
+        <a href="#">Gaming</a>
+        <a href="#">News</a>
+        <a href="#">Sport</a>
+        <a href="#">Fashion & Beauty</a>
+        <a href="#">Podcasts</a>
+    </div>
+
+    <div class="content">
+        <h1>Trending Videos</h1>
+        <div id="video-container"></div>
+        <button id="load-more"
+            style="padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; margin-top: 20px;">Load
+            More</button>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyBOxI67R7W2mseoaBGx-er-zs5gv63eLu4'; // Replace with your API Key
+        const VIDEO_CONTAINER = document.getElementById('video-container');
+        const LOAD_MORE_BUTTON = document.getElementById('load-more');
+        let nextPageToken = '';
+
+        async function fetchTrendingVideos(pageToken = '') {
+            try {
+                let url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&chart=mostPopular&regionCode=US&key=${API_KEY}`;
+                if (pageToken) {
+                    url += `&pageToken=${pageToken}`;
+                }
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const videos = data.items;
+                nextPageToken = data.nextPageToken;
+
+                // Loop through the videos and create cards
+                videos.forEach(video => {
+                    const card = document.createElement('div');
+                    card.classList.add('video-card');
+
+                    card.innerHTML = `
+                        <iframe src="https://www.youtube.com/embed/${video.id}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <div class="card-content">
+                            <p class="card-title">${video.snippet.title}</p>
+                            <div class="card-info">
+                                <img src="${video.snippet.thumbnails.default.url}" alt="Channel thumbnail" class="card-thumbnail">
+                                <p class="card-meta">Uploaded by ${video.snippet.channelTitle} - ${video.snippet.publishedAt}</p>
+                                <p class="views">${video.statistics.viewCount} views</p>
+                            </div>
+                            <p class="card-description">${video.snippet.description}</p>
+                        </div>
+                    `;
+                    VIDEO_CONTAINER.appendChild(card);
+                });
+
+                // Show or hide the load more button
+                if (nextPageToken) {
+                    LOAD_MORE_BUTTON.style.display = 'block';
+                } else {
+                    LOAD_MORE_BUTTON.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching videos:', error);
+                VIDEO_CONTAINER.innerHTML = `<p>Error fetching trending videos. Please try again later.</p>`;
+            }
+        }
+
+        // Call the function to fetch trending videos when the page loads
+        fetchTrendingVideos();
+
+        // Load more videos when the "Load More" button is clicked
+        LOAD_MORE_BUTTON.addEventListener('click', () => {
+            fetchTrendingVideos(nextPageToken);
+        });
+    </script>
+</body>
+
+</html>
